@@ -74,6 +74,7 @@ function launchSVG(){
 		.attr("cx", function(d) { return d.x; })
 		.attr("cy", function(d) { return d.y; })
 		.attr("r", radius)
+		.attr("id", function(d, i) { return i; })
 		.style("fill", function(d, i) { return color(i); });
 }
 function dragstarted(d) {
@@ -86,7 +87,9 @@ function dragged(d) {
 }
 
 function dragended(d, i) {
-  d3.select(this).classed("active", false);
+  d3.select(this).classed("active", false); 
+  var circleFound = findNearCircle($(this).find('path'),i);
+  console.log(circleFound);
 }
 
 function renderCell(d) {
@@ -145,8 +148,56 @@ $('#btn_Add').click(function(){
 		.attr("cx", function(d) { return d.x; })
 		.attr("cy", function(d) { return d.y; })
 		.attr("r", radius)
+		.attr("id", function(d, i) { return 'circle-'+i; })
 		.style("fill", function(d, i) { return color(i); });
 });
+
+function findNearCircle(currentCirclePath, currentCircleId){
+ var listPathCircle = d3.selectAll("path")._groups[0];
+ var allPath = convertPathToList(listPathCircle);
+ var plop = new Array();
+ plop.push(currentCirclePath);
+ var currPath = convertPathToList(currentCirclePath);
+var circleFound = new Array();
+ 
+ $(currPath).each(function(index, value) {
+	var currDraggedValue = 	value.path		
+	var findCircle= $.grep(allPath, function(e,i){
+      return e.path === currDraggedValue;
+    });
+	$(findCircle).each(function(indexs, values) {
+		if(currentCircleId != values.idPathCircle &&  jQuery.inArray(values.idPathCircle,circleFound)===-1)
+			circleFound.push(values.idPathCircle);
+	});
+	
+});
+
+return circleFound;
+}
+
+function convertPathToList(listPathCircle){
+  var newlistPathCircle = new Array();
+ $(listPathCircle).each(function() {
+    var idPathCircle = $(this).attr("id");
+	var path = $(this).attr("d").split(",");
+	$(path).each(function(index, value) {
+		if(value.length >7){
+		   var splitPath = value.split('L');
+		   $(splitPath).each(function(index, value) {
+					if(value.length >7){
+						var newPathObject = new Object();
+					   newPathObject.idPathCircle = idPathCircle.replace('cell-','');
+					   newPathObject.path = value.replace('M','');
+					   newlistPathCircle.push(newPathObject);
+					}
+		   });
+		   
+		}
+	});
+	
+ });
+ return newlistPathCircle;
+}
 
 </script>
 </html>
