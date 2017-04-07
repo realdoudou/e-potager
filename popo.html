@@ -18,11 +18,15 @@ path {
 
 
 </style>
+<body>
 <input type="button" id="btn_launch" value="launch">
 <input type="button" id="btn_Add" value="Add">
 <input type="button" id="btn_clear" value="clear">
 
+
 <svg id="svgid" width="960" height="500"></svg>
+
+</body>
 <script src="http://d3js.org/d3.v4.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
 
@@ -211,6 +215,18 @@ function convertPathToList(listPathCircle){
  });
  return newlistPathCircle;
 }
-
+function importJson(){
+	$.getJSON("loveme.json", function( data ) {
+	  var items = [];
+	  $.each( data, function( key, val ) {
+		items.push( "<li id='" + key + "'>" + val + "</li>" );
+	  });
+	 
+	  $( "<ul/>", {
+		"class": "my-new-list",
+		html: items.join( "" )
+	  }).appendTo( "body" );
+	});
+}
 </script>
 </html>
