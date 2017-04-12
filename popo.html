@@ -215,6 +215,60 @@ function convertPathToList(listPathCircle){
  });
  return newlistPathCircle;
 }
+
+//Array = Perma01 array
+//containSource = string value
+//likeCible = string value
+//return true when they love each other
+function isFriendly(array, containSource, likeCible){
+    const contain = array.find(value => this.findSource(value, containSource))
+    if(contain != undefined && contain.love != undefined && contain.love.length > 0)
+    {
+      perma.Perma01[0].love.find(value => this.findCible(value, "CAROTTE"))
+      const like = contain.love.find(value => this.findCible(value, likeCible))
+      if(like != undefined && like === likeCible)
+      {
+        return true
+      }
+      else {
+        return false
+      }
+    }
+    else {
+      return false
+    }
+}
+
+//Array = Perma01 array
+//containSource = string value
+//likeCible = string value
+//return true when they dont like each other
+function isEnnemy(array, containSource, likeCible){
+    const contain = array.find(value => this.findSource(value, containSource))
+    if(contain != undefined && contain.hate != undefined && contain.hate.length > 0)
+    {
+      const like = contain.hate.find(value => this.findCible(value, likeCible))
+      if(like != undefined && like === likeCible)
+      {
+        return true
+      }
+      else {
+        return false
+      }
+    }
+    else {
+      return false
+    }
+}
+
+function findSource(currentValue, source){
+  return currentValue.name === source
+}
+
+function findCible(currentValue, cible){
+  return currentValue === cible
+}	
+	
 function importJson(){
 	$.getJSON("loveme.json", function( data ) {
 	  var items = [];
