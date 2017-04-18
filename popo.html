@@ -34,6 +34,7 @@ path {
 var circles;
 var voronoi;
 var cell;
+var perma = new Array();
 function launchSVG(){
 	var svg = d3.select("svg"),
 		width = +svg.attr("width"),
@@ -172,8 +173,6 @@ $('#btn_Add').click(function(){
 function findNearCircle(currentCirclePath, currentCircleId){
  var listPathCircle = d3.selectAll("path")._groups[0];
  var allPath = convertPathToList(listPathCircle);
- var plop = new Array();
- plop.push(currentCirclePath);
  var currPath = convertPathToList(currentCirclePath);
 var circleFound = new Array();
  
@@ -224,7 +223,7 @@ function isFriendly(array, containSource, likeCible){
     const contain = array.find(value => this.findSource(value, containSource))
     if(contain != undefined && contain.love != undefined && contain.love.length > 0)
     {
-      perma.Perma01[0].love.find(value => this.findCible(value, "CAROTTE"))
+      //perma.Perma01[0].love.find(value => this.findCible(value, "CAROTTE"))
       const like = contain.love.find(value => this.findCible(value, likeCible))
       if(like != undefined && like === likeCible)
       {
@@ -271,15 +270,8 @@ function findCible(currentValue, cible){
 	
 function importJson(){
 	$.getJSON("loveme.json", function( data ) {
-	  var items = [];
-	  $.each( data, function( key, val ) {
-		items.push( "<li id='" + key + "'>" + val + "</li>" );
-	  });
-	 
-	  $( "<ul/>", {
-		"class": "my-new-list",
-		html: items.join( "" )
-	  }).appendTo( "body" );
+	  perma = data.Perma01;
+	  console.log(isFriendly(perma, "AIL", "CAROTTE"));
 	});
 }
 </script>
