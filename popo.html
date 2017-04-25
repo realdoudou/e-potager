@@ -16,6 +16,12 @@ path {
   fill: rgb(188, 189, 34)!important;
 }
 
+.font-shadow
+{
+    stroke: white;
+    /*	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;*/
+}
+
 
 </style>
 
@@ -23,8 +29,6 @@ path {
 <link href="jquery-ui.structure.min.css" type="text/css" rel="stylesheet">
 <link href="jquery-ui.theme.min.css" type="text/css" rel="stylesheet">
 <body>
-<input type="button" id="btn_launch" value="launch">
-
 <div class="ui-widget">
   <label for="tagsPlante">Plante: </label>
   <input id="tagsPlante">
@@ -50,61 +54,13 @@ var cell;
 var perma = new Array();
 var circleInfoArray = new Array();
 var cptCircle = 0;
-function launchSVG(){
-	var svg = d3.select("svg"),
-		width = +svg.attr("width"),
-		height = +svg.attr("height"),
-		radius = 32;
-
-	circles = d3.range(2).map(function() {
-	  return {
-		x: Math.round(Math.random() * (width - radius * 2) + radius),
-		y: Math.round(Math.random() * (height - radius * 2) + radius)
-	  };
-	});
-
-	var color = d3.scaleOrdinal()
-		.range(d3.schemeCategory20);
-
-	voronoi = d3.voronoi()
-		.x(function(d) { return d.x; })
-		.y(function(d) { return d.y; })
-		.extent([[-1, -1], [width + 1, height + 1]]);
-
-	var circle = svg.selectAll("g")
-	  .data(circles)
-	  .enter().append("g")
-		.call(d3.drag()
-			.on("start", dragstarted)
-			.on("drag", dragged)
-			.on("end", dragended));
-
-	cell = circle.append("path")
-	  .data(voronoi.polygons(circles))
-		.attr("d", renderCell)
-		.attr("id", function(d, i) { return "cell-" + i; });
-
-	circle.append("clipPath")
-		.attr("id", function(d, i) { return "clip-" + i; })
-	  .append("use")
-		.attr("xlink:href", function(d, i) { return "#cell-" + i; });
-
-	circle.append("circle")
-		.attr("clip-path", function(d, i) { return "url(#clip-" + i + ")"; })
-		.attr("cx", function(d) { return d.x; })
-		.attr("cy", function(d) { return d.y; })
-		.attr("r", radius)
-		.attr("id", function(d, i) { return i; })
-		.attr("friends", function(d, i) { return '1,3,6'; })
-		.attr("ennemies", function(d, i) { return '0,2'; })
-		.style("fill", function(d, i) { return color(i); });
-}
 function dragstarted(d) {
   d3.select(this).raise().classed("active", true);
 }
 
 function dragged(d) {
   d3.select(this).select("circle").attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+  d3.select(this).select("text").attr("dx", d.x = d3.event.x).attr("dy", d.y = d3.event.y);
   cell = cell.data(voronoi.polygons(circles)).attr("d", renderCell);
 }
 
@@ -120,80 +76,90 @@ function dragended(d, i) {
 			$('#circle-'+value).css('fill','rgb(214, 39, 40)')
 		}
 	});
-  console.log(circleFound);
+  computeAllCircle();
 }
 
 function renderCell(d) {
   return d == null ? null : "M" + d.join("L") + "Z";
 }
 
-$('#btn_launch').click(function(){
-	launchSVG();
-});
 $('#btn_clear').click(function(){
 	$("#svgid").empty();
 });
 
 $('#btn_Add').click(function(){	
-	$("#svgid").empty();
-	/*var circleInfo = new Object();
-			circleInfo.name = $( "#tagsPlanteSelected" ).val();
-			circleInfo.id = cptCircle;*/
-			circleInfoArray.push($( "#tagsPlanteSelected" ).val());
-	var svg = d3.select("svg"),
-		width = +svg.attr("width"),
-		height = +svg.attr("height"),
-		radius = 32;
-	if(circles ===undefined){
-		circles = d3.range(1).map(function() {
-		  return {
-			x: Math.round(Math.random() * (width - radius * 2) + radius),
-			y: Math.round(Math.random() * (height - radius * 2) + radius)
-		  };
-		});
-	}else{
-		circles.push({
-			x: Math.round(Math.random() * (width - radius * 2) + radius),
-			y: Math.round(Math.random() * (height - radius * 2) + radius)
-		  });
-	 }
-	  var color = d3.scaleOrdinal()
-		.range(d3.schemeCategory20);
+	if($( "#tagsPlanteSelected" ).val()!==""){
+		$("#svgid").empty();
+		circleInfoArray.push($( "#tagsPlanteSelected" ).val());
+		var svg = d3.select("svg"),
+			width = +svg.attr("width"),
+			height = +svg.attr("height"),
+			radius = 32;
+		if(circles ===undefined){
+			circles = d3.range(1).map(function() {
+			  return {
+				x: Math.round(Math.random() * (width - radius * 2) + radius),
+				y: Math.round(Math.random() * (height - radius * 2) + radius)
+			  };
+			});
+		}else{
+			circles.push({
+				x: Math.round(Math.random() * (width - radius * 2) + radius),
+				y: Math.round(Math.random() * (height - radius * 2) + radius)
+			  });
+		 }
+		  var color = d3.scaleOrdinal()
+			.range(d3.schemeCategory20);
 
-	voronoi = d3.voronoi()
-		.x(function(d) { return d.x; })
-		.y(function(d) { return d.y; })
-		.extent([[-1, -1], [width + 1, height + 1]]);
+		voronoi = d3.voronoi()
+			.x(function(d) { return d.x; })
+			.y(function(d) { return d.y; })
+			.extent([[-1, -1], [width + 1, height + 1]]);
 
-	var circle = svg.selectAll("g")
-	  .data(circles)
-	  .enter().append("g")
-		.call(d3.drag()
-			.on("start", dragstarted)
-			.on("drag", dragged)
-			.on("end", dragended));
+		var circle = svg.selectAll("g")
+		  .data(circles)
+		  .enter().append("g")
+			.call(d3.drag()
+				.on("start", dragstarted)
+				.on("drag", dragged)
+				.on("end", dragended));
 
-	cell = circle.append("path")
-	  .data(voronoi.polygons(circles))
-		.attr("d", renderCell)
-		.attr("id", function(d, i) { return "cell-" + i; });
+		cell = circle.append("path")
+		  .data(voronoi.polygons(circles))
+			.attr("d", renderCell)
+			.attr("id", function(d, i) { return "cell-" + i; });
 
-	circle.append("clipPath")
-		.attr("id", function(d, i) { return "clip-" + i; })
-	  .append("use")
-		.attr("xlink:href", function(d, i) { return "#cell-" + i; });
+		circle.append("clipPath")
+			.attr("id", function(d, i) { return "clip-" + i; })
+		  .append("use")
+			.attr("xlink:href", function(d, i) { return "#cell-" + i; });
 
-	circle.append("circle")
-		.attr("clip-path", function(d, i) { return "url(#clip-" + i + ")"; })
-		.attr("cx", function(d) { return d.x; })
-		.attr("cy", function(d) { return d.y; })
-		.attr("r", radius)
-		.attr("id", function(d, i) { return 'circle-'+i; })
-		.attr("name", function(d, i) { return circleInfoArray[i]; })
-		.attr("friends", function(d, i) { return getFriendlyArray(circleInfoArray[i]); })
-		.attr("ennemies", function(d, i) { return getEnnemyArray(circleInfoArray[i]); })
-		.style("fill", function(d, i) { return color(i); });
-	cptCircle++;
+		circle.append("circle")
+			.attr("clip-path", function(d, i) { return "url(#clip-" + i + ")"; })
+			.attr("cx", function(d) { return d.x; })
+			.attr("cy", function(d) { return d.y; })
+			.attr("r", radius)
+			.attr("id", function(d, i) { return 'circle-'+i; })
+			.attr("name", function(d, i) { return circleInfoArray[i]; })
+			.attr("friends", function(d, i) { return getFriendlyArray(circleInfoArray[i]); })
+			.attr("ennemies", function(d, i) { return getEnnemyArray(circleInfoArray[i]); })
+			.style("fill", function(d, i) { return 'rgb(174, 199, 232)'; });
+			
+		circle.append("text")		
+			.attr("dx", function(d) { return d.x; })
+			.attr("text-anchor", "middle")
+			.attr("font-size", function(d) { return radius / ((radius * 10) / 100); })
+			.attr("dy", function(d) { return d.y; })
+			.attr("class", function(d) { return "font-shadow"; })		
+			.text(function(d,i){return circleInfoArray[i]});
+			
+			/*.attr("dx", function(d) { return d.x; })
+			.attr("dy", function(d) { return d.y; })*/
+		cptCircle++;
+		computeAllCircle();
+		$( "#tagsPlanteSelected" ).val("");
+		$( "#tagsPlante" ).val("");	
+	}
 });
 
 function getFriendlyArray(name){
@@ -310,12 +276,51 @@ function findSource(currentValue, source){
 function findCible(currentValue, cible){
   return currentValue === cible
 }	
-	
-function importJson(){
-	$.getJSON("loveme.json", function( data ) {
-	  perma = data.Perma01;
-	  console.log(isFriendly(perma, "AIL", "CAROTTE"));
+function computeAllCircle(){
+    // reinitialise tous les cercle en bleu
+	var allCircles = d3.selectAll("circle")._groups[0];
+	$(allCircles).each(function(index, value) {
+		$(this).css('fill','rgb(174, 199, 232)');
+		$(this).attr('ennemy', false);
 	});
+	//on charge tous les objet cercles (g)
+	var gList = d3.selectAll("g")._groups[0];
+	//pour chaque objet cercle g
+		$(gList).each(function(index, valueg) {
+		var idG = $(this).find('path')[0].id.split('-')[1];
+		var circleEnnemies = $(this).find('circle')[0].getAttribute('ennemies').split(',');
+		var circleFriends = $(this).find('circle')[0].getAttribute('friends').split(',');
+		var currentCircle = $(this).find('circle')[0];
+		//on cherche ses voisins
+		var circlesFound = findNearCircle($(this).find('path'),idG)
+		 
+		 //Pour chaque voisin
+		 $(circlesFound).each(function(indexs, value) {
+			// si la couleur du voisin n'est pas rouge (au moins un ennemi)
+			if($('#circle-'+value).attr('ennemy')!=='true'){	
+				//on regarde la liste des ennemis: si ennemi changer la couleur en rouge
+				if(jQuery.inArray($('#circle-'+value).attr('name'),circleEnnemies)>-1){
+					$('#circle-'+value).attr('ennemy', true);
+					$(currentCircle).attr('ennemy', true);
+					$(currentCircle).css('fill','rgb(214, 39, 40)')
+					$('#circle-'+value).css('fill','rgb(214, 39, 40)')
+				} //Sinon on regarde la liste des amis : si ami changer la couleur en vert
+				else if(jQuery.inArray($('#circle-'+value).attr('name'),circleFriends)>-1){
+					$('#circle-'+value).css('fill','rgb(44, 160, 44)')
+					if($(currentCircle).attr('ennemy')!=='true'){
+						$(currentCircle).css('fill','rgb(44, 160, 44)')
+					}
+				} 
+			}
+		});
+	  });
+	  
+	  
+	     // si la couleur n'est pas rouge 
+	    //on regarde la liste des ennemis
+		//  si ennemi changer la couleur en rouge
+		//on regarde la liste des amis
+		//si ami changer la couleur en vert
 }
 $( document ).ready(function() {
     $.getJSON("loveme.json", function( data ) {
@@ -329,10 +334,8 @@ $( document ).ready(function() {
 	  $( "#tagsPlante" ).autocomplete({
 		source: availableTags,
 		select:  function (event, ui) {
-				/* THIS IS NEW */
 				$( "#tagsPlanteSelected" ).val(ui.item.value);	
-		}
-		  
+		}		  
 	  });
 	});
 });
