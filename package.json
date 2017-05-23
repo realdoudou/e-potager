@@ -1,0 +1,25 @@
+{
+  "name": "e-potager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "jquery-ui.min.js",
+  "dependencies": {
+    "express": "^4.15.3",
+    "open": "0.0.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/realdoudou/e-potager.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/realdoudou/e-potager/issues"
+  },
+  "homepage": "https://github.com/realdoudou/e-potager#readme"
+}
